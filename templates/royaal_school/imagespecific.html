@@ -1,0 +1,195 @@
+{% load static %}
+{% load pwa %} 
+{% comment %} {% progressive_web_app_meta %} {% endcomment %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="manifest" href="{% static "assets/manifest.json" %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Specific Image</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        .navbar-brand {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .navbar-brand i.fa {
+            border: 1px solid white; /* Set border color to white */
+            padding: 3px; /* Add padding to increase space around the icon */
+            border-radius: 50%; /* Add border radius to make the border rounded */
+            color: white; /* Set text color to white */
+        }
+
+        .nav_text {
+            color: white; /* Set text color to white */
+            margin-left: 10px; /* Add left margin of 10px */
+        }
+
+        .image-container {
+            text-align: center;
+            margin-top: 50px;
+            position: relative;
+            overflow: hidden;
+            height: 80vh; /* Set the height to 80% of the viewport height */
+        }
+
+        #zoomable-image {
+            max-width: none;
+            max-height: none;
+            display: none;
+        }
+
+        #zoomable-canvas {
+            max-width: 100%;
+            max-height: 100%;
+            display: block;
+            transition: transform 0.3s ease;
+            touch-action: none; /* Disable default touch actions */
+        }
+
+        .download-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #28a745;
+            color: white;
+            width: 90%;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            display: block;
+            text-align: center;
+            font-size: 18px;
+            text-decoration: none;
+            z-index: 1000;
+        }
+
+        .download-btn:focus, .download-btn:active {
+            text-decoration: none; /* Remove text underline */
+            background-color: #28a745; /* Maintain the same background color */
+            color: white; /* Maintain text color */
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: rgb(57,159,34);">
+        <a class="navbar-brand" href="{% url 'photo' circular_id=circular_id %}">
+            <i class="fa fa-arrow-left" aria-hidden="true"></i>
+            <span class="nav_text">PHOTO</span> <!-- Bold text -->
+        </a>
+    </nav>
+
+    <div class="image-container" id="image-container">
+        {% if image_url %}
+            <canvas id="zoomable-canvas"></canvas>
+            <img id="zoomable-image" src="{{ image_url }}" alt="Specific Image">
+            <button class="btn btn-success download-btn" id="download-btn">Download Image</button>
+        {% else %}
+            <p>No image to display.</p>
+        {% endif %}
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.getElementById("download-btn").addEventListener("click", function() {
+            alert("Your download will start now.");
+    
+            const pdfUrl = "{{ image_url }}";
+            const link = document.createElement("a");
+            link.href = pdfUrl;
+            link.download = "photo.JPG"; // specify the filename
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+    </script>
+    <script>
+        var canvas = document.getElementById('zoomable-canvas');
+        var ctx = canvas.getContext('2d');
+        var image = new Image();
+        var originalWidth, originalHeight;
+        var scale = 1;
+        var lastPinchDistance = 0;
+        var pinchCenterX = 0;
+        var pinchCenterY = 0;
+        var lastTouchX = 0;
+        var lastTouchY = 0;
+
+        image.onload = function() {
+            originalWidth = image.width;
+            originalHeight = image.height;
+            canvas.width = originalWidth;
+            canvas.height = originalHeight;
+            ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+            centerImageContainerVertically();
+        };
+
+        image.src = document.getElementById('zoomable-image').src;
+
+        // Detect pinch gesture
+        canvas.addEventListener('touchstart', function(event) {
+            if (event.touches.length === 2) {
+                var touch1 = event.touches[0];
+                var touch2 = event.touches[1];
+                pinchCenterX = (touch1.clientX + touch2.clientX) / 2;
+                pinchCenterY = (touch1.clientY + touch2.clientY) / 2;
+                lastPinchDistance = Math.hypot(touch1.clientX - touch2.clientX, touch1.clientY - touch2.clientY);
+            } else if (event.touches.length === 1) {
+                var touch = event.touches[0];
+                lastTouchX = touch.clientX;
+                lastTouchY = touch.clientY;
+            }
+        });
+
+        canvas.addEventListener('touchmove', function(event) {
+            event.preventDefault();
+            if (event.touches.length === 2) {
+                var touch1 = event.touches[0];
+                var touch2 = event.touches[1];
+                var newPinchDistance = Math.hypot(touch1.clientX - touch2.clientX, touch1.clientY - touch2.clientY);
+                var deltaScale = newPinchDistance / lastPinchDistance;
+                var newWidth = originalWidth * scale * deltaScale;
+                var newHeight = originalHeight * scale * deltaScale;
+                if (newWidth > originalWidth && newHeight > originalHeight) {
+                    var deltaX = (pinchCenterX - canvas.offsetLeft) * (1 - deltaScale);
+                    var deltaY = (pinchCenterY - canvas.offsetTop) * (1 - deltaScale);
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.translate(deltaX, deltaY);
+                    ctx.scale(deltaScale, deltaScale);
+                    ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+                    scale *= deltaScale;
+                    lastPinchDistance = newPinchDistance;
+                }
+            } else if (event.touches.length === 1) {
+                var touch = event.touches[0];
+                var deltaX = touch.clientX - lastTouchX;
+                var deltaY = touch.clientY - lastTouchY;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.translate(deltaX, deltaY);
+                ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+                lastTouchX = touch.clientX;
+                lastTouchY = touch.clientY;
+            }
+        });
+
+        function centerImageContainerVertically() {
+            var container = document.getElementById('image-container');
+            var windowHeight = window.innerHeight;
+            var containerHeight = container.offsetHeight;
+            var marginTop = (windowHeight - containerHeight) / 2;
+            container.style.marginTop = marginTop + 'px';
+        }
+    </script>
+</body>
+</html>

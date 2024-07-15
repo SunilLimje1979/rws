@@ -1,0 +1,19 @@
+{
+    "name": "Royaal School",
+    "short_name": "rws",
+    "description": "Royaal Web App",
+    "dir": "auto",
+    "lang": "en-US",
+    "display": "standalone",
+    "orientation": "any",
+    "start_url": "/rws/login/",
+    "background_color": "#f2f5f3",
+    "theme_color": "#34eb4c",
+    "icons": [
+        {
+        "src": "/rws/static/assets/img/icon.png",
+        "sizes": "512x512",
+        "type": "image/png"
+    }
+    ]
+}

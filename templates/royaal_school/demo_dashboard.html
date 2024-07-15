@@ -1,0 +1,130 @@
+
+def Circular(request):
+    # Retrieve the API data from the session
+    api_data = json.loads(request.session.get('api_data', '[]'))
+
+    if api_data:
+        # Extract necessary fields from api_data
+        custid = api_data[0].get('custid', '')
+        grno = api_data[0].get('grno', '')
+        classid = api_data[0].get('classid', '')
+        divid = api_data[0].get('divid', '')
+        access = api_data[0].get('access', '')
+        mobile_number = api_data[0].get('mobile', '')
+
+        # Update the payload with the retrieved values
+        payload = {
+            "custid": custid,
+            "grno": grno,
+            "type": "CIRCULAR",
+            "classid": classid,
+            "divid": divid,
+            "access": access,
+            "mobile": mobile_number
+        }
+
+        # API endpoint
+        api_url = "https://mispack.in/app/admin/public/gettype"
+
+        try:
+            # Make a POST request to the API with SSL verification bypassed
+            response = requests.post(api_url, json=payload, verify=False)
+
+            # Check if the request was successful (status code 200)
+            if response.status_code == 200:
+                # Parse the JSON response
+                data = response.json()
+
+                # Extract assignments from the response
+                circulars = [{
+                    "type": circular['type'],
+                    'date': circular['date'],
+                    'description': circular['description'],
+                    'pdf_link': f"https://www.mispack.in/app/application/main/{circular['uid']}"  # Adjust the link format as per your requirement
+                } for circular in data.get('response', [])]
+
+                # Prepare the context to pass to the template
+                context = {'circulars': circulars, 'api_data': api_data}
+
+                # Render the template with the context
+                return render(request, 'royaal_school/circular.html', context)
+            else:
+                # Handle errors, for example, by returning an error page
+                return HttpResponse("Error occurred while fetching data from the API")
+        except requests.exceptions.RequestException as e:
+            # Handle connection or request errors
+            return render(request, 'error.html', {'message': f'Error: {e}'})
+    else:
+        # Handle the case when api_data is empty
+        return render(request, 'error.html', {'message': 'API data not found in session'})
+
+
+
+
+
+
+
+
+
+
+        
+def Event(request):
+# Sample dynamic data
+api_data = json.loads(request.session.get('api_data', '[]'))
+
+if api_data:
+   # Extract necessary fields from api_data
+   custid = api_data[0].get('custid', '')
+   grno = api_data[0].get('grno', '')
+   classid = api_data[0].get('classid', '')
+   divid = api_data[0].get('divid', '')
+   access = api_data[0].get('access', '')
+   mobile_number = api_data[0].get('mobile', '')
+
+   # Update the payload with the retrieved values
+   payload = {
+       "custid": custid,
+       "grno": grno,
+       "type": "EVENTS",
+       "classid": classid,
+       "divid": divid,
+       "access": access,
+       "mobile": mobile_number
+   }
+
+   # API endpoint
+   api_url = "https://mispack.in/app/admin/public/gettype"
+
+   try:
+       # Make a POST request to the API with SSL verification bypassed
+       response = requests.post(api_url, json=payload, verify=False)
+
+       # Check if the request was successful (status code 200)
+       if response.status_code == 200:
+           # Parse the JSON response
+           data = response.json()
+
+          # Extract assignments from the response
+           circulars = [{
+               "id":circular['id'],
+               "type": circular['type'],
+               'date': circular['date'],
+               'description': circular['description'],
+               'pdf_link': f"https://www.mispack.in/app/application/main/{circular['uid']}"  # Adjust the link format as per your requirement
+           } for circular in data.get('response', [])]
+
+           # Prepare the context to pass to the template
+           context = {'circulars': circulars, 'api_data': api_data}
+
+           # Render the template with the context
+           return render(request,'royaal_school/event.html', context)
+       else:
+           # Handle errors, for example, by returning an error page
+           return HttpResponse("Error occurred while fetching data from the API")
+   except requests.exceptions.RequestException as e:
+       # Handle connection or request errors
+       return render(request, 'error.html', {'message': f'Error: {e}'})
+else:
+   # Handle the case when api_data is empty
+   return render(request, 'error.html', {'message': 'API data not found in session'})
+
