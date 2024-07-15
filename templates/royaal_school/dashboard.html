@@ -62,7 +62,7 @@
         }
     
         .offcanvas-header {
-            background-color: rgb(57, 159, 34);
+            background: linear-gradient(to bottom, #F4BB44, #4169e1);
             padding: 20px;
         }
         
@@ -104,12 +104,12 @@
             position: absolute;
             top: 10px; /* Add top padding */
             right: 10px; /* Add right padding */
-            background-color: rgb(57,159,34);
-            color: white;
+            background-color: rgb(244,187,68);
+            color: black;
             border-radius: 50%;
             width: 40px;
             height: 40px;
-            font-size: 12px;
+            font-size: 13px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -149,16 +149,16 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-light fixed-top" style="background-color: rgb(57,159,34);">
+    <nav class="navbar navbar-light fixed-top" style="background-color: #F4BB44;">
         <div class="container-fluid">
             <!-- Wrapper for Icon and Text -->
             <div class="d-flex align-items-center"> <!-- Make the wrapper flex and align items vertically -->
                 <!-- Drawer Icon and "Home-Shekhar" Text -->
                 <button class="navbar-toggler custom-toggler" type="button" data-bs-toggle="offcanvas"
                     data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
-                    <i class="fas fa-bars" style="margin-right: 10px; color: white;"></i>
+                    <i class="fas fa-bars" style="margin-right: 10px; color: black;"></i>
                 </button>
-                <span class="nav_text" style="color: white; font-size: 22px;font-weight: bold;">Home - {{ first_name }} {{ last_name }}</span>
+                <span class="nav_text" style="color: black; font-size: 22px;font-weight: bold;">Home - {{ first_name }} {{ last_name }}</span>
             </div>
         </div>
     </nav>
@@ -166,7 +166,7 @@
    <!-- Offcanvas Content -->
 <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
     <div class="offcanvas-header d-flex justify-content-center align-items-center" style="margin-top: 0;">
-        <img src="{% static 'assets/img/school.png' %}" alt="Veg Icon" style="width: 230px; height: 180px; border-radius: 10%;"> <!-- Image for the user -->
+        <img src="{% static 'assets/img/school.png' %}" alt="Veg Icon" style="width: 230px; height: 180px; border-radius: 15%;"> <!-- Image for the user -->
     </div>
     
    
@@ -213,7 +213,7 @@
         <div class="col mb-custom">
 
             <a href="{% url 'profile' %}" style="color: black; text-decoration: none;">
-                <div class="card " style="background-color: rgb(237,112,20); width: 100%;">
+                <div class="card " style="background-color: #4169E1; width: 100%;">
                     <div class="card-body text-center">
                         <i class="fas fa-user-alt" style="font-size: 4rem; color: white;"></i>
                         <p class="card-text"><strong style="font-size: 18px; color: white;">PROFILE</strong></p>
@@ -226,7 +226,7 @@
         <div class="col mb-custom">
 
             <a href="{% url 'attendance' %}" style="color: black; text-decoration: none;">
-                <div class="card" style="background-color: rgb(237,112,20); width: 100%;">
+                <div class="card " style="background-color: #4169E1; width: 100%;">
                     <div class="card-body text-center">
                         <i class="fas fa-user-plus" style="font-size: 4rem;color: white;"></i>
                         {% if notification_counts.attendance_count > 0 %}
@@ -243,7 +243,7 @@
         <div class="col mb-custom">
 
             <a href="{% url 'circular' %}" style="color: black; text-decoration: none;">
-                <div class="card" style="background-color: rgb(237,112,20); width: 100%;">
+                <div class="card " style="background-color: #4169E1; width: 100%;">
                     <div class="card-body text-center">
                         <i class="fas fa-bullhorn" style="font-size: 4rem;color: white;"></i>
                         {% if notification_counts.circular_count > 0 %}
@@ -261,7 +261,7 @@
   <div class="col mb-custom">
 
     <a href="{% url 'assignment' %}" style="color: black; text-decoration: none;">
-        <div class="card" style="background-color: rgb(237,112,20); width: 100%;">
+        <div class="card " style="background-color: #4169E1; width: 100%;">
             <div class="card-body text-center">
                 <i class="fas fa-book-open" style="font-size: 4rem;color: white;"></i>
                 {% if notification_counts.homework_count > 0 %}
@@ -278,7 +278,7 @@
         <!-- Card 5 -->
         <div class="col mb-custom">
             <a href="{% url 'event' %}" style="color: black; text-decoration: none;">
-                <div class="card" style="background-color: rgb(237,112,20); width: 100%;">
+                <div class="card " style="background-color: #4169E1; width: 100%;">
                     <div class="card-body text-center">
                         <i class="fas fa-calendar-alt" style="font-size: 4rem;color: white;"></i>
                         {% if notification_counts.events_count > 0 %}
@@ -294,7 +294,7 @@
         <!-- Card 6 -->
         <div class="col mb-custom">
             <a href="{% url 'examination' %}" style="color: black; text-decoration: none;">
-                <div class="card" style="background-color: rgb(237,112,20); width: 100%;">
+                <div class="card " style="background-color: #4169E1; width: 100%;">
                     <div class="card-body text-center">
                         <i class="fas fa-file-alt" style="font-size: 4rem;color: white;"></i>
                         {% if notification_counts.examination_count > 0 %}
@@ -310,7 +310,7 @@
       
         <div class="col mb-custom">
     <a href="{% url 'fees' %}" style="color: black; text-decoration: none;">
-        <div class="card" style="background-color: rgb(237,112,20);width: 100%;">
+        <div class="card " style="background-color: #4169E1; width: 100%;">
             <div class="card-body text-center">
                 <i class="fa fa-inr" style="font-size: 4rem;color: white;"></i>
                 {% if notification_counts.fees_count > 0 %}
@@ -325,7 +325,7 @@
         <!-- Card 8 -->
         <div class="col mb-custom">
             <a href="{% url 'media' %}" style="color: black; text-decoration: none;">
-                <div class="card" style="background-color: rgb(237,112,20); width: 100%;">
+                <div class="card " style="background-color: #4169E1; width: 100%;">
                     <div class="card-body text-center">
                         <i class="fas fa-file-video" style="font-size: 4rem;color: white;"></i>
                         {% if notification_counts.payroll_media_count > 0 %}
