@@ -1084,7 +1084,12 @@ def Logout(request):
     # request.session.clear()
     # Redirect to the login page
     return redirect('exit')
-
+##################################### Imagespecific Page ##################################################################
+def exit(request):
+    # Clear all sessions
+    # request.session.clear()
+    # Redirect to the login page
+    return render(request,'royaal_school/exit.html')
 
 
 ##################################### PDF DEMO ##################################################################

@@ -1,0 +1,29 @@
+{% load i18n %}
+{% load static %}
+{% load pwa %} 
+{% comment %} {% progressive_web_app_meta %} {% endcomment %}
+ 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centered Image</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .center-image {
+            max-width: 100%;
+            max-height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <img src={% static 'assets/img/royaal_school_logo.jpg' %} alt="Centered Image" class="center-image">
+</body>
+</html>

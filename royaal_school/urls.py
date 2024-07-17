@@ -42,4 +42,6 @@ urlpatterns = [
     
     path('pdfdemo/', views.pdfdemo, name='pdfdemo'),
     
+    path('exit/', views.exit, name='exit'),
+    
 ]
