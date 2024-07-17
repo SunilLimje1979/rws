@@ -25,7 +25,14 @@ SECRET_KEY = 'django-insecure-ddl-y0x@j+olgp^##0kn=+(m!ixcw8mv)8v_i3c$xr!1(zjg_b
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*','mispack.in' ,'www.mispack.in','https://mispack.in']
+
+DEFAULT_PORT = 8001
+
+PORT = 8001
+
+RUNSERVER_PORT = 8001
+# Application definition
 
 
 # Application definition
@@ -70,15 +77,16 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'rws.wsgi.application'
+WSGI_APPLICATION = 'rws.wsgi.application'
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8000",
+    "http://localhost:8001",
     'https://www.mispack.in' ]
 CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:8000',
+    'http://localhost:8001',
     'https://www.mispack.in' ]
 CORS_ORIGIN_WHITELIST = [
-    'http://localhost:8000',
+    'http://localhost:8001',
     'https://www.mispack.in' ]
 
 # Database
