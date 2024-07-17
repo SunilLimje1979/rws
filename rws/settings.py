@@ -34,9 +34,6 @@ PORT = 8001
 RUNSERVER_PORT = 8001
 # Application definition
 
-
-# Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
