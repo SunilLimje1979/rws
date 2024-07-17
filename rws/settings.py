@@ -77,7 +77,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'rws.wsgi.application'
-WSGI_APPLICATION = 'rws.wsgi.application'
+
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8001",
