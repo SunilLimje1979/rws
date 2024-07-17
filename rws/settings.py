@@ -78,7 +78,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'rws.wsgi.application'
 
-
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8001",
     'https://www.mispack.in' ]
@@ -98,7 +97,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
