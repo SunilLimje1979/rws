@@ -142,27 +142,29 @@
         <ul class="navbar-nav">
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'dashboard' %}">
-                    <i class="fas fa-tachometer-alt" style="color: black;"></i><!-- Font Awesome icon -->
-                    <span class="nav_text" style="color: black;">Dashboard</span> <!-- Bold text -->
+                    <i class="fas fa-tachometer-alt" style="color: black;"></i>
+                    <span class="nav_text" style="color: black;">  Dashboard/Home</span>
                 </a>
             </li>
-{% comment %}             
+
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'pending_acceptance' %}">
-                    <i class="fas fa-history" style="color: black;"></i>  <!-- Font Awesome icon -->
-                    <span class="nav_text" style="color: black;">Pending Acceptance</span> <!-- Bold text -->
+                    <i class="fas fa-history" style="color: black;"></i>
+                    <span class="nav_text" style="color: black;">  Pending Acceptance</span>
                 </a>
-            </li> {% endcomment %}
+            </li>
+        
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'my_students' %}">
                     <i class="fa-solid fa-user-group" style="color: black;"></i>
                     <span class="nav_text" style="color: black;">My Students</span>
                 </a>
             </li>
+
             <li class="nav-item">
-                <a class="nav-link" href="#">
-                    <i class="fas fa-sign-out-alt" style="color: black;"></i>  <!-- Font Awesome icon -->
-                    <span class="nav_text" style="color: black;">Exit</span> <!-- Bold text -->
+                <a class="nav-link" href="{% url 'logout' %}">
+                    <i class="fas fa-sign-out-alt" style="color: black;"></i>
+                    <span class="nav_text" style="color: black;"> Exit</span>
                 </a>
             </li>
         </ul>

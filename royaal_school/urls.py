@@ -44,4 +44,6 @@ urlpatterns = [
     
     path('exit/', views.exit, name='exit'),
     
+    path('accept_pa/', views.accept_pa, name='accept_pa'),
+    
 ]

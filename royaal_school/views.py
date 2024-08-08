@@ -26,10 +26,13 @@ def Login(request):
     elif request.method == "POST":
         # Get mobile number from POST data
         mobile_number = request.POST.get('mobileNumber')
+        ios_id = request.GET.get('ios_id', '0')  # Default to '0' if not provided
+        gcm_id = request.GET.get('gcm_id', '0') 
+        
+        # print(ios_id)
+        # print(gcm_id)
         # print("Mobile Number:", mobile_number)
-        
-        
-        
+
         # Disable SSL certificate verification (for development purposes)
         requests.packages.urllib3.disable_warnings()
         
@@ -46,9 +49,10 @@ def Login(request):
                 otp_api_url = "https://mispack.in/app/admin/public/otp"
                 otp_data = {
                     "mobile_no": mobile_number,
-                    "gcm_id": 1,
-                    "ios_id": 0
+                    "gcm_id": gcm_id,
+                    "ios_id": ios_id
                 }
+                # print(otp_data)
                 otp_response = requests.post(otp_api_url, json=otp_data, verify=False)
                 # Store mobile number in session
                 request.session['mobile_number'] = mobile_number
@@ -181,8 +185,8 @@ def DashboardPage(request):
 
 ##################################### Pending Acceptance ##################################################################
 
-def Pending_acceptance(request):
-    return render(request,'royaal_school/pending_acceptance.html')
+# def Pending_acceptance(request):
+#     return render(request,'royaal_school/pending_acceptance.html')
 
 ##################################### My Student Page ##################################################################
 
@@ -449,7 +453,7 @@ def Attendance(request):
 
             # Send POST request to update message count API
             api_params_update_message_count = {
-                "type": "ATTENDANCE",
+                "type": "attendance",
                 "contact": mobile_number,
                 "adminno": adminno
             }
@@ -535,7 +539,7 @@ def Circular(request):
 
             # Send POST request to update message count API
             api_params_update_message_count = {
-                "type": "CIRCULAR",
+                "type": "circular",
                 "contact": mobile_number,
                 "adminno": adminno
             }
@@ -610,7 +614,7 @@ def Assignment(request):
 
             # Send POST request to update message count API
             api_params_update_message_count = {
-                "type": "HOMEWORK",
+                "type": "homework",
                 "contact": mobile_number,
                 "adminno": adminno
             }
@@ -743,11 +747,13 @@ def Event(request):
 
             # Send POST request to update message count API
             api_params_update_message_count = {
-                "type": "EVENTS",
+                "type": "events",
                 "contact": mobile_number,
                 "adminno": adminno
             }
            
+            print(api_params_update_message_count)
+            
             api_url_update_message_count = "https://mispack.in/app/admin/public/updatemessagecount"
             
             # Make a POST request to update message count with SSL verification bypassed
@@ -760,6 +766,7 @@ def Event(request):
             return HttpResponse("Error occurred while fetching data from the API")
     except requests.exceptions.RequestException as e:
         # Handle connection or request errors
+        print(763)
         return render(request, 'error.html', {'message': f'Error: {e}'})
 
 
@@ -814,10 +821,11 @@ def Examination(request):
 
             # Send POST request to update message count API
             api_params_update_message_count = {
-                "type": "EXAMINATION",
+                "type": "examination",
                 "contact": mobile_number,
                 "adminno": adminno
             }
+            print(api_params_update_message_count)
            
             api_url_update_message_count = "https://mispack.in/app/admin/public/updatemessagecount"
             
@@ -897,7 +905,7 @@ def Fees(request):
 
             # Send POST request to update message count API
             api_params_update_message_count = {
-                "type": "FEES",
+                "type": "fees",
                 "contact": mobile_number,
                 "adminno": adminno
             }
@@ -985,7 +993,7 @@ def Media(request):
 
             # Send POST request to update message count API
             api_params_update_message_count = {
-                "type": "PAYROLL",
+                "type": "payroll",
                 "contact": mobile_number,
                 "adminno": adminno
             }
@@ -1095,3 +1103,114 @@ def exit(request):
 ##################################### PDF DEMO ##################################################################
 def pdfdemo(request):
     return render(request,'royaal_school/pdfdemo.html')
+
+############################################################## Pending Accetance #############
+def Pending_acceptance(request):
+    # Retrieve student data from session
+    student_data = request.session.get('student_data', {})
+   
+    # Extract mobile number and adminno
+    mobile_number = ''
+    adminno = ''
+    for key, data in student_data.items():
+        mobile_number = data.get('contact', '')
+        adminno = data.get('adminno', '')
+        if mobile_number and adminno:
+            break  # Stop looping if both mobile number and adminno are found
+
+    # API parameters for circulars
+    api_params_circulars = {
+        "mobile": mobile_number
+    }
+    
+    # API endpoint for circulars
+    api_url_circulars = "https://mispack.in/app/admin/public/principal"
+
+    try:
+        # Make a POST request to fetch circulars data with SSL verification bypassed
+        response_circulars = requests.post(api_url_circulars, json=api_params_circulars, verify=False)
+
+        # Check if the request was successful (status code 200)
+        if response_circulars.status_code == 200:
+            # Parse the JSON response for circulars
+            data_circulars = response_circulars.json()
+
+            # Extract circulars from the response
+            circulars = [{
+                "id":circular['id'],
+                "type": circular['type'],
+                'date': circular['date'],
+                'flag': circular['flag'],
+                'description': circular['description'],
+                'pdf_link': f"https://www.mispack.in/app/application/main/{circular['uid']}"
+            } for circular in data_circulars.get('response', [])]
+
+            # Prepare the context to pass to the template
+            context = {'circulars': circulars}
+            # print(context)
+            # Send POST request to update message count API
+            api_params_update_message_count = {
+                "type": "events",
+                "contact": mobile_number,
+                "adminno": adminno
+            }
+           
+            # print(api_params_update_message_count)
+            
+            api_url_update_message_count = "https://mispack.in/app/admin/public/updatemessagecount"
+            
+            # Make a POST request to update message count with SSL verification bypassed
+            requests.post(api_url_update_message_count, json=api_params_update_message_count, verify=False)
+
+            # Render the template with the context
+            return render(request, 'royaal_school/pending_acceptance.html', context)
+        else:
+            # Handle errors, for example, by returning an error page
+            return HttpResponse("Error occurred while fetching data from the API")
+    except requests.exceptions.RequestException as e:
+        # Handle connection or request errors
+        return render(request, 'error.html', {'message': f'Error: {e}'})
+    
+
+########################################## Acceptance Update ########################################
+def accept_pa(request):
+    if request.method == 'POST':
+        circular_id = request.POST.get('circular_id')
+        action = request.POST.get('action')
+        
+        payload = {
+            "id": circular_id,
+            "value": action
+        }
+        
+        # API endpoint
+        api_url = 'https://mispack.in/app/admin/public/updateaction'
+        
+        # Headers
+        headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+        
+        try:
+            # Make the POST request to the external API with headers and disable SSL verification
+            response = requests.post(api_url, json=payload, headers=headers, verify=False)
+            
+            # Check if the request was successful
+            if response.status_code == 200:
+                api_response = response.json()
+                # print(api_response)
+                
+                if api_response.get('response'):
+                    return JsonResponse({'status': 'success', 'message': 'Action processed successfully.'})
+                else:
+                    return JsonResponse({'status': 'error', 'message': 'API response was false.'})
+            else:
+                return JsonResponse({'status': 'error', 'message': 'Failed to process action through API.'})
+        
+        except requests.exceptions.RequestException as e:
+            # Handle exceptions
+            return JsonResponse({'status': 'error', 'message': str(e)})
+    
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
