@@ -108,7 +108,10 @@
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background-color: rgb(244,187,68);">
       <a class="navbar-brand" href="{% url 'dashboard' %}">
           <i class="fa fa-arrow-left" aria-hidden="true"></i>
-          <span class="nav_text" style="font-weight: bold;">{{ circulars.0.type|title|upper }}</span> <!-- Convert to uppercase -->
+                <span class="nav_text" style="font-weight: bold;">
+            {{ circulars.0.type|title|upper|default:"FEES" }}
+        </span>
+ <!-- Convert to uppercase -->
       </a>
   </nav>
 

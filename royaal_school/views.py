@@ -842,7 +842,6 @@ def Examination(request):
         return render(request, 'error.html', {'message': f'Error: {e}'})
 
 ##################################### Fees Page ##################################################################
-
 def Fees(request):
     # Retrieve student data from session
     student_data = request.session.get('student_data', {})
@@ -877,11 +876,17 @@ def Fees(request):
         # Check if the request was successful (status code 200)
         if response_circulars.status_code == 200:
             # Parse the JSON response for circulars
-            # Parse the JSON response for circulars
             data_circulars = response_circulars.json()
 
             # Initialize an empty list to store circulars
             circulars = []
+
+            # Check if 'response' is None
+            if data_circulars.get('response') is None:
+                # Either render the page without data
+                return render(request, 'royaal_school/fees.html', {'circulars': []})
+                # Or redirect to another page if required
+                # return redirect('some_other_page')
 
             # Check if 'response' is a list (second response structure)
             if isinstance(data_circulars.get('response'), list):
@@ -925,6 +930,7 @@ def Fees(request):
     except requests.exceptions.RequestException as e:
         # Handle connection or request errors
         return render(request, 'error.html', {'message': f'Error: {e}'})
+
 
 ##################################### Media Page ##################################################################
 
