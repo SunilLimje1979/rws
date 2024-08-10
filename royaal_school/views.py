@@ -468,7 +468,7 @@ def Attendance(request):
         else:
             # Handle errors, for example, by returning an error page
             # return HttpResponse("Error occurred while fetching data from the API")
-            messages.success(request, "NO DATA FOUND")
+            messages.error(request, "NO DATA FOUND")
             return render(request, 'royaal_school/attendance.html')
         
     except requests.exceptions.RequestException as e:
@@ -842,6 +842,7 @@ def Examination(request):
         return render(request, 'error.html', {'message': f'Error: {e}'})
 
 ##################################### Fees Page ##################################################################
+
 def Fees(request):
     # Retrieve student data from session
     student_data = request.session.get('student_data', {})
@@ -884,6 +885,7 @@ def Fees(request):
             # Check if 'response' is None
             if data_circulars.get('response') is None:
                 # Either render the page without data
+                messages.error(request, "NO DATA FOUND")
                 return render(request, 'royaal_school/fees.html', {'circulars': []})
                 # Or redirect to another page if required
                 # return redirect('some_other_page')
@@ -1126,7 +1128,7 @@ def Pending_acceptance(request):
 
     # API parameters for circulars
     api_params_circulars = {
-        "mobile": mobile_number
+        "mobile": 860072101
     }
     
     # API endpoint for circulars
@@ -1141,6 +1143,11 @@ def Pending_acceptance(request):
             # Parse the JSON response for circulars
             data_circulars = response_circulars.json()
 
+            response_content = data_circulars.get('response', [])
+            if isinstance(response_content, str) and response_content.startswith("not found"):
+                messages.error(request, "NO DATA FOUND")
+                return render(request, 'royaal_school/pending_acceptance.html', {'circulars': []})
+            
             # Extract circulars from the response
             circulars = [{
                 "id":circular['id'],
