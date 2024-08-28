@@ -108,8 +108,9 @@
   <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background-color: rgb(244,187,68);">
     <a class="navbar-brand" href="{% url 'dashboard' %}">
         <i class="fa fa-arrow-left" aria-hidden="true"></i>
-        <span class="nav_text" style="font-weight: bold;">{{ circulars.0.type|title|upper }}</span> <!-- Capitalize the first word of the circular type -->
-    </a>
+        {% comment %} <span class="nav_text" style="font-weight: bold;">{{ circulars.0.type|title|upper }}</span> <!-- Capitalize the first word of the circular type --> {% endcomment %}
+        <span class="nav_text" style="font-weight: bold;">EVENTS</span>
+      </a>
   </nav>
 
 <div class="container">
@@ -144,6 +145,21 @@
       <!-- End loop -->
   </ul>
 </div>
+
+
+
+{% if messages %}
+<div id="messages-container" class="messages">
+  {% for message in messages %}
+  <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} alert-dismissible fade show" role="alert" style="margin-left: 4px; margin-right: 4px;">
+    {{ message }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
 
 <!-- jQuery and Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -184,6 +200,21 @@
     }, 5000);
   });
 </script>
+
+<script>
+  $(document).ready(function() {
+    // Function to close the alert when close button is clicked
+    $('.alert .close').on('click', function() {
+      $(this).parent().fadeOut('slow');
+    });
+
+    // Automatically close messages after 5 seconds
+    setTimeout(function() {
+      $('.alert').fadeOut('slow');
+    }, 10000); 
+  });
+</script>
+
 
 </body>
 </html>

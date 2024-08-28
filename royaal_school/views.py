@@ -136,8 +136,18 @@ def DashboardPage(request):
             # Set student data in session
             request.session['student_data'] = student_api_output
             
-            # Print student data stored in session
-            # print("Student data stored in session:", student_api_output)
+            # Set student data in session
+            request.session['student_data'] = student_api_output
+
+            # # Access the first key of the dictionary to get the student data
+            student_key = next(iter(request.session['student_data']))
+
+            # # # Update 'classid' value if it is 'Emp'
+            if request.session['student_data'][student_key]['classid'] == 'Emp':
+                request.session['student_data'][student_key]['classid'] = 11
+          
+            # Print the updated session data
+            print(request.session['student_data'])
             
             # Filter student data based on selected admin numbers
             matching_students = [student_data for student_data in student_api_output.values() if student_data.get('adminno') in selected_admin_numbers]
@@ -181,12 +191,6 @@ def DashboardPage(request):
         notification_counts = None
     
     return render(request, 'royaal_school/dashboard.html', {'first_name': first_name, 'last_name': last_name, 'notification_counts': notification_counts})
-
-
-##################################### Pending Acceptance ##################################################################
-
-# def Pending_acceptance(request):
-#     return render(request,'royaal_school/pending_acceptance.html')
 
 ##################################### My Student Page ##################################################################
 
@@ -440,13 +444,15 @@ def Attendance(request):
             # Parse the JSON response for circulars
             data_circulars = response_circulars.json()
 
-            # Extract circulars from the response
-            circulars = [{
-                "type": circular['type'],
-                'date': circular['date'],
-                'description': circular['description'],
-                'pdf_link': f"https://www.mispack.in/app/application/main/{circular['uid']}"
-            } for circular in data_circulars.get('response', [])]
+             # Extract circulars from the response
+            circulars = []
+            for key, circular in data_circulars.get('response', {}).items():
+                circulars.append({
+                    "type": circular['type'],
+                    'date': circular['date'],
+                    'description': circular['description'],
+                    'pdf_link': f"https://www.mispack.in/app/application/main/{circular['uid']}"
+                })
 
             # Prepare the context to pass to the template
             context = {'circulars': circulars}
@@ -474,8 +480,6 @@ def Attendance(request):
     except requests.exceptions.RequestException as e:
         # Handle connection or request errors
         return render(request, 'error.html', {'message': f'Error: {e}'})
-
-
 
 
 ##################################### Circular Page ##################################################################
@@ -515,7 +519,12 @@ def Circular(request):
         if response_circulars.status_code == 200:
             # Parse the JSON response for circulars
             data_circulars = response_circulars.json()
-
+            
+            if data_circulars.get('response') is None or not data_circulars.get('response'):
+                # Either render the page without data or show a message
+                messages.error(request, "NO DATA FOUND")
+                return render(request, 'royaal_school/circular.html', {'circulars': []})
+           
             # # Extract circulars from the response
             # circulars = [{
             #     "type": circular['type'],
@@ -601,6 +610,12 @@ def Assignment(request):
 
             # Extract circulars from the response
             circulars = []
+            if data_circulars.get('response') is None:
+                # Either render the page without data
+                messages.error(request, "NO DATA FOUND")
+                return render(request, 'royaal_school/assignment.html', {'circulars': []})
+            
+            
             for key, item in data_circulars.get('response', {}).items():
                 circulars.append({
                     "type": item['type'],
@@ -721,6 +736,7 @@ def Event(request):
         "mobile": mobile_number
     }
     
+    # print(api_params_circulars)
     # API endpoint for circulars
     api_url_circulars = "https://mispack.in/app/admin/public/gettype"
 
@@ -733,14 +749,34 @@ def Event(request):
             # Parse the JSON response for circulars
             data_circulars = response_circulars.json()
 
-            # Extract circulars from the response
-            circulars = [{
-                "id":circular['id'],
-                "type": circular['type'],
-                'date': circular['date'],
-                'description': circular['description'],
-                'pdf_link': f"https://www.mispack.in/app/application/main/{circular['uid']}"
-            } for circular in data_circulars.get('response', [])]
+            # Handle the possible response structures
+            circulars = []
+            if data_circulars.get('response') is None:
+                # Either render the page without data
+                messages.error(request, "NO DATA FOUND")
+                return render(request, 'royaal_school/event.html', {'circulars': []})
+            
+            if 'response' in data_circulars:
+                if isinstance(data_circulars['response'], list):
+                    # Original response format (list of circulars)
+                    circulars = [{
+                        "id": circular['id'],
+                        "type": circular['type'],
+                        'date': circular['date'],
+                        'description': circular['description'],
+                        'pdf_link': f"https://www.mispack.in/app/application/main/{circular['uid']}"
+                    } for circular in data_circulars['response']]
+                elif isinstance(data_circulars['response'], dict):
+                    # New response format (dictionary with numeric keys)
+                    for key in data_circulars['response']:
+                        circular = data_circulars['response'][key]
+                        circulars.append({
+                            "id": circular['id'],
+                            "type": circular['type'],
+                            'date': circular['date'],
+                            'description': circular['description'],
+                            'pdf_link': f"https://www.mispack.in/app/application/main/{circular['uid']}"
+                        })
 
             # Prepare the context to pass to the template
             context = {'circulars': circulars}
@@ -752,8 +788,6 @@ def Event(request):
                 "adminno": adminno
             }
            
-            print(api_params_update_message_count)
-            
             api_url_update_message_count = "https://mispack.in/app/admin/public/updatemessagecount"
             
             # Make a POST request to update message count with SSL verification bypassed
@@ -766,8 +800,8 @@ def Event(request):
             return HttpResponse("Error occurred while fetching data from the API")
     except requests.exceptions.RequestException as e:
         # Handle connection or request errors
-        print(763)
         return render(request, 'error.html', {'message': f'Error: {e}'})
+
 
 
 ##################################### Examination Page ##################################################################
@@ -795,6 +829,7 @@ def Examination(request):
         "access": "Parent",
         "mobile": mobile_number
     }
+    # print(api_params_circulars)
     
     # API endpoint for circulars
     api_url_circulars = "https://mispack.in/app/admin/public/gettype"
@@ -802,6 +837,7 @@ def Examination(request):
     try:
         # Make a POST request to fetch circulars data with SSL verification bypassed
         response_circulars = requests.post(api_url_circulars, json=api_params_circulars, verify=False)
+        # print(response_circulars.text)
 
         # Check if the request was successful (status code 200)
         if response_circulars.status_code == 200:
@@ -809,12 +845,32 @@ def Examination(request):
             data_circulars = response_circulars.json()
 
             # Extract circulars from the response
-            circulars = [{
-                "type": item['type'],
-                'date': item['date'],
-                'description': item['description'],
-                'pdf_link': f"https://www.mispack.in/app/application/main/{item['uid']}"
-            } for item in data_circulars.get('response', [])]
+            circulars = []
+            response_data = data_circulars.get('response', {})
+            
+            # Check if response is a list or dictionary and normalize
+            if isinstance(response_data, dict):
+                # Handle dictionary format
+                for item_key, item in response_data.items():
+                    circulars.append({
+                        "type": item['type'],
+                        'date': item['date'],
+                        'description': item['description'],
+                        'pdf_link': f"https://www.mispack.in/app/application/main/{item['uid']}"
+                    })
+            elif isinstance(response_data, list):
+                # Handle list format
+                for item in response_data:
+                    circulars.append({
+                        "type": item['type'],
+                        'date': item['date'],
+                        'description': item['description'],
+                        'pdf_link': f"https://www.mispack.in/app/application/main/{item['uid']}"
+                    })
+            else:
+                # Handle unexpected format
+                messages.error(request, "NO DATA FOUND")
+                return render(request, 'royaal_school/examination.html', {'circulars': []})
 
             # Prepare the context to pass to the template
             context = {'circulars': circulars}
@@ -825,7 +881,6 @@ def Examination(request):
                 "contact": mobile_number,
                 "adminno": adminno
             }
-            print(api_params_update_message_count)
            
             api_url_update_message_count = "https://mispack.in/app/admin/public/updatemessagecount"
             
@@ -840,6 +895,7 @@ def Examination(request):
     except requests.exceptions.RequestException as e:
         # Handle connection or request errors
         return render(request, 'error.html', {'message': f'Error: {e}'})
+
 
 ##################################### Fees Page ##################################################################
 
@@ -973,6 +1029,10 @@ def Media(request):
             data_circulars = response_circulars.json()
 
             # Extract circulars from the response
+            if data_circulars.get('response') is None:
+                # Either render the page without data or show a message
+                messages.error(request, "NO DATA FOUND")
+                return render(request, 'royaal_school/media.html', {'circulars': []})
             
                         # Extract circulars from the response
             if isinstance(data_circulars.get('response'), dict):
@@ -1020,6 +1080,7 @@ def Media(request):
     except requests.exceptions.RequestException as e:
         # Handle connection or request errors
         return render(request, 'error.html', {'message': f'Error: {e}'})
+
 
 ##################################### PDF Page ##################################################################
 

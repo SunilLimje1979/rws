@@ -138,6 +138,22 @@
   </ul>
 </div>
 
+
+
+{% if messages %}
+<div id="messages-container" class="messages">
+  {% for message in messages %}
+  <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} alert-dismissible fade show" role="alert" style="margin-left: 4px; margin-right: 4px;">
+    {{ message }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+
 <script src="https://kit.fontawesome.com/a076d05399.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script>
@@ -160,5 +176,18 @@
   });
 </script>
 
+<script>
+  $(document).ready(function() {
+    // Function to close the alert when close button is clicked
+    $('.alert .close').on('click', function() {
+      $(this).parent().fadeOut('slow');
+    });
+
+    // Automatically close messages after 5 seconds
+    setTimeout(function() {
+      $('.alert').fadeOut('slow');
+    }, 10000); 
+  });
+</script>
 </body>
 </html>

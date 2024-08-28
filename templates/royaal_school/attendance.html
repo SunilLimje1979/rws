@@ -138,7 +138,6 @@
   </ul>
 </div>
 
-
 {% if messages %}
 <div id="messages-container" class="messages">
   {% for message in messages %}
@@ -151,7 +150,6 @@
   {% endfor %}
 </div>
 {% endif %}
-
 
 <script src="https://kit.fontawesome.com/a076d05399.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -182,6 +180,22 @@
       document.body.removeChild(link);
     });
     {% endfor %}
+  });
+</script>
+
+
+
+<script>
+  $(document).ready(function() {
+    // Function to close the alert when close button is clicked
+    $('.alert .close').on('click', function() {
+      $(this).parent().fadeOut('slow');
+    });
+
+    // Automatically close messages after 5 seconds
+    setTimeout(function() {
+      $('.alert').fadeOut('slow');
+    }, 10000); 
   });
 </script>
 
