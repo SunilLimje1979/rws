@@ -135,16 +135,13 @@ def DashboardPage(request):
             
             # Set student data in session
             request.session['student_data'] = student_api_output
-            
-            # Set student data in session
-            request.session['student_data'] = student_api_output
-
+        
             # # Access the first key of the dictionary to get the student data
-            student_key = next(iter(request.session['student_data']))
+            # student_key = next(iter(request.session['student_data']))
 
-            # # # Update 'classid' value if it is 'Emp'
-            if request.session['student_data'][student_key]['classid'] == 'Emp':
-                request.session['student_data'][student_key]['classid'] = 11
+            # # # # Update 'classid' value if it is 'Emp'
+            # if request.session['student_data'][student_key]['classid'] == 'Emp':
+            #     request.session['student_data'][student_key]['classid'] = 4
           
             # Print the updated session data
             print(request.session['student_data'])
