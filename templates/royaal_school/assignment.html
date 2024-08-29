@@ -112,8 +112,17 @@
         <div class="user-date">{{ circular.date }}</div>
 
         <!-- Replace anchor tag with a span or div for PDF icon -->
-        <div class="pdf-icon">
-          <i class="far fa-file-pdf"></i>
+         <!-- Replace anchor tag with a span or div for PDF icon -->
+         <div class="pdf-icon" data-url="{{ circular.pdf_link }}">
+          {% if circular.pdf_link %}
+            {% if circular.pdf_link|slice:'-4:' == '.pdf' %}
+              <i class="far fa-file-pdf"></i> <!-- PDF icon -->
+            {% else %}
+              <i class="fa-solid fa-images" style="font-size: 28px;"></i> <!-- Default icon for other file types -->
+            {% endif %}
+          {% else %}
+            <i class="fa-solid fa-images" style="font-size: 28px;"></i>  <!-- Default icon for no PDF link -->
+          {% endif %}
         </div>
       </div>
       <div class="description">
@@ -138,27 +147,43 @@
 </div>
 {% endif %}
 
-
-<script src="https://kit.fontawesome.com/a076d05399.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-  document.addEventListener("DOMContentLoaded", function() {
+  $(document).ready(function() {
     {% for circular in circulars %}
-      // Add click event listener for each PDF icon
-      document.getElementById('pdf-icon-{{ forloop.counter }}').addEventListener('click', function() {
-        // Alert and start download
-        alert("Your download will start now.");
+    $('#pdf-icon-{{ forloop.counter }}').on('click', function() {
+      const pdfUrl = "{{ circular.pdf_link }}";
+      const fileExtension = pdfUrl.split('.').pop().toLowerCase();
 
-        const pdfUrl = "{{ circular.pdf_link }}";
+      if (fileExtension === 'pdf') {
+        // Direct download for PDF files
+        alert("Your download will start now.");
         const link = document.createElement("a");
         link.href = pdfUrl;
-        link.download = "school.pdf"; // specify the filename
+        link.download = "document.pdf"; // specify the filename
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-      });
+      } else {
+        // Handle navigation for other file types (assuming it's an image)
+        window.location.href = "{% url 'photo' circular.id %}";
+      }
+    });
     {% endfor %}
+
+    // Function to close the alert when close button is clicked
+    $('.alert .close').on('click', function() {
+      $(this).parent().fadeOut('slow');
+    });
+
+    // Automatically close messages after 5 seconds
+    setTimeout(function() {
+      $('.alert').fadeOut('slow');
+    }, 5000);
   });
 </script>
+
 
 <script>
   $(document).ready(function() {

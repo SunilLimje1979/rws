@@ -126,7 +126,15 @@
         <div class="user-date">{{ circular.date }}</div>
         <!-- Replace anchor tag with a div for PDF icon -->
         <div class="pdf-icon">
-          <i class="far fa-file-pdf"></i>
+          {% if circular.pdf_link %}
+            {% if circular.pdf_link|slice:'-4:' == '.pdf' %}
+              <i class="far fa-file-pdf"></i> <!-- PDF icon -->
+            {% else %}
+            <i class="fa-solid fa-images" style="font-size: 28px;"></i> <!-- Default icon for other file types -->
+            {% endif %}
+          {% else %}
+          <i class="fa-solid fa-images" style="font-size: 28px;"></i>  <!-- Default icon for no PDF link -->
+          {% endif %}
         </div>
       </div>
       <div class="description">
@@ -153,29 +161,42 @@
 </div>
 {% endif %}
 
-
 <script src="https://kit.fontawesome.com/a076d05399.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script>
   $(document).ready(function() {
-    // Function to handle PDF download on icon click
     {% for circular in circulars %}
     $('#pdf-icon-{{ forloop.counter }}').on('click', function() {
-      // Alert and start download
-      alert("Your download will start now.");
-
       const pdfUrl = "{{ circular.pdf_link }}";
-      const link = document.createElement("a");
-      link.href = pdfUrl;
-      link.download = "document.pdf"; // Specify the filename here
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      const fileExtension = pdfUrl.split('.').pop().toLowerCase();
+
+      if (fileExtension === 'pdf') {
+        // Direct download for PDF files
+        alert("Your download will start now.");
+        const link = document.createElement("a");
+        link.href = pdfUrl;
+        link.download = "document.pdf"; // specify the filename
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else {
+        // Handle navigation for other file types (assuming it's an image)
+        window.location.href = "{% url 'photo' circular.id %}";
+      }
     });
     {% endfor %}
+
+    // Function to close the alert when close button is clicked
+    $('.alert .close').on('click', function() {
+      $(this).parent().fadeOut('slow');
+    });
+
+    // Automatically close messages after 5 seconds
+    setTimeout(function() {
+      $('.alert').fadeOut('slow');
+    }, 5000);
   });
 </script>
-
 <script>
   $(document).ready(function() {
     // Function to close the alert when close button is clicked
@@ -189,5 +210,6 @@
     }, 10000); 
   });
 </script>
+
 </body>
 </html>
