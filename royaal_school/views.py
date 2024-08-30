@@ -605,7 +605,6 @@ def Assignment(request):
     # Retrieve student data from session
     student_data = request.session.get('student_data', {})
    
-    # print("601",student_data)
     # Extract mobile number and adminno
     mobile_number = ''
     adminno = ''
@@ -632,21 +631,20 @@ def Assignment(request):
     try:
         # Make a POST request to fetch circulars data with SSL verification bypassed
         response_circulars = requests.post(api_url_circulars, json=api_params_circulars, verify=False)
-        # print(response_circulars.text)
+        
         # Check if the request was successful (status code 200)
         if response_circulars.status_code == 200:
             # Parse the JSON response for circulars
             data_circulars = response_circulars.json()
 
-            # Extract circulars from the response
-            circulars = []
-            
-            if data_circulars.get('response') is None:
-                # Either render the page without data
+            # Check if the response is null or not in the expected format
+            if not data_circulars.get('response') or not isinstance(data_circulars.get('response'), dict):
                 messages.error(request, "NO DATA FOUND")
                 return render(request, 'royaal_school/assignment.html', {'circulars': []})
-            
-            for key, item in data_circulars.get('response', {}).items():
+
+            # Extract circulars from the response
+            circulars = []
+            for key, item in data_circulars['response'].items():
                 circulars.append({
                     "id": item['id'],
                     "type": item['type'],
@@ -657,10 +655,6 @@ def Assignment(request):
 
             # Prepare the context to pass to the template
             context = {'circulars': circulars}
-            
-            # print(context)
-            
-            # print(context)
 
             # Send POST request to update message count API
             api_params_update_message_count = {
@@ -682,8 +676,6 @@ def Assignment(request):
     except requests.exceptions.RequestException as e:
         # Handle connection or request errors
         return render(request, 'error.html', {'message': f'Error: {e}'})
-
-
 
 ##################################### Event Page ##################################################################
 
