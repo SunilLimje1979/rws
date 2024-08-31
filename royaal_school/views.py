@@ -617,7 +617,7 @@ def Assignment(request):
   
     
     api_params_circulars = {
-        "custid": "student_data[0]['custid']",
+        "custid": student_data[0]['custid'],
         "grno": student_data[0]['grnno'],
         "type": "HOMEWORK",
         "classid": student_data[0]['classid'],
@@ -625,6 +625,7 @@ def Assignment(request):
         "access": "Parent",
         "mobile": mobile_number
     }
+    print(api_params_circulars)
     
     # API endpoint for circulars
     api_url_circulars = "https://mispack.in/app/admin/public/gettype"
@@ -646,6 +647,7 @@ def Assignment(request):
                 return render(request, 'royaal_school/assignment.html', {'circulars': []})
 
             response_data = data_circulars.get('response', {})
+            print(response_data)
 
             if isinstance(response_data, list):
                 # Handle the case where response is a list
