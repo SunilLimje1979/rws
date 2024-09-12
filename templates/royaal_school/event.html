@@ -1,220 +1,236 @@
 {% load static %}
-{% load pwa %} 
-{% comment %} {% progressive_web_app_meta %} {% endcomment %}
+{% load pwa %}
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<link rel="manifest" href="{% static "assets/manifest.json" %}">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>User Profile</title>
-<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <link rel="manifest" href="{% static 'assets/manifest.json' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 
-<!-- Font Awesome CSS -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <!-- Font Awesome CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
-<style>
-  .navbar-brand {
-    font-size: 22px;
-    font-weight: bold;
-  }
+    <style>
+        .navbar-brand {
+            font-size: 22px;
+            font-weight: bold;
+        }
 
-  .navbar-brand i.fa {
-    border: 1px solid black;
-    padding: 4px;
-    border-radius: 50%;
-    color: black;
-  }
-  .navbar {
-    padding: 4px 0;
-    padding-left: 10px;
-  }
+        .navbar-brand i.fa {
+            border: 1px solid black;
+            padding: 4px;
+            border-radius: 50%;
+            color: black;
+        }
 
-  .nav_text {
-    color: black;
-    margin-left: 10px;
-    font-size: 22px;
-  }
+        .navbar {
+            padding: 4px 0;
+            padding-left: 10px;
+        }
 
-  .user-list {
-    list-style-type: none;
-    padding: 0;
-    padding-top: 50px;
-  }
+        .nav_text {
+            color: black;
+            margin-left: 10px;
+            font-size: 22px;
+        }
 
-  .user-item {
-    margin-bottom: 0;
-    padding-left: 4px;
-    padding-right: 4px;
-    border-radius: 8px;
-    border-bottom: 1px solid rgba(204, 204, 204, 0.9);
-  }
+        .user-list {
+            list-style-type: none;
+            padding: 0;
+            padding-top: 50px;
+        }
 
-  .user-info {
-    display: flex;
-    align-items: center;
-  }
+        .user-item {
+            margin-bottom: 0;
+            padding-left: 4px;
+            padding-right: 4px;
+            border-radius: 8px;
+            border-bottom: 1px solid rgba(204, 204, 204, 0.9);
+        }
 
-  .book-icon {
-    color: orange;
-    font-size: 34px;
-    margin-right: 20px;
-  }
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
 
-  .user-date {
-    color: rgba(0, 0, 0, 0.7);
-    margin-bottom: 5px;
-    font-weight: bold;
-    font-size: 18px;
-    display: flex;
-    align-items: center;
-    padding-top: 15px;
-  }
+        .book-icon {
+            color: orange;
+            font-size: 34px;
+            margin-right: 20px;
+        }
 
-  .pdf-icon {
-    color: rgba(0, 0, 0, 0.7);
-    font-size: 34px;
-    margin-left: auto;
-    margin-bottom: 0;
-  }
+        .user-date {
+            color: rgba(0, 0, 0, 0.7);
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            padding-top: 15px;
+        }
 
-  .description {
-    color: rgba(0, 0, 0, 0.7);
-    margin-top: 0;
-    margin-left: 0;
-    font-size: 14px;
-    font-weight: bold;
-    padding: 0;
-    margin-bottom: 20px;
-  }
+        .pdf-icon {
+            color: rgba(0, 0, 0, 0.7);
+            font-size: 34px;
+            margin-left: auto;
+            margin-bottom: 0;
+        }
 
-  /* Remove underline from anchor tags */
-  .user-item a {
-    text-decoration: none;
-    color: inherit; /* Ensures anchor tag inherits text color */
-  }
+        .description {
+            color: rgba(0, 0, 0, 0.7);
+            margin-top: 0;
+            margin-left: 0;
+            font-size: 14px;
+            font-weight: bold;
+            padding: 0;
+            margin-bottom: 20px;
+        }
 
-  /* Style anchor tag on hover if needed */
-  .user-item a:hover {
-    text-decoration: none;
-    color: inherit;
-  }
+        /* Remove underline from anchor tags */
+        .user-item a {
+            text-decoration: none;
+            color: inherit;
+        }
 
-</style>
+        /* Style anchor tag on hover if needed */
+        .user-item a:hover {
+            text-decoration: none;
+            color: inherit;
+        }
+
+    </style>
 
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background-color: rgb(244,187,68);">
-    <a class="navbar-brand" href="{% url 'dashboard' %}">
-        <i class="fa fa-arrow-left" aria-hidden="true"></i>
-        {% comment %} <span class="nav_text" style="font-weight: bold;">{{ circulars.0.type|title|upper }}</span> <!-- Capitalize the first word of the circular type --> {% endcomment %}
-        <span class="nav_text" style="font-weight: bold;">EVENTS</span>
-      </a>
-  </nav>
-
-<div class="container">
-  <ul class="user-list">
-      <!-- Loop over circulars -->
-      {% for circular in circulars %}
-      <li class="user-item">
-        <a href="javascript:void(0);" id="circular-link-{{ forloop.counter }}">
-          <div class="user-info">
-            <div class="book-icon">
-              <i class="fas fa-calendar-alt" style="color: white; background-color: rgb(65,105,225); width: 40px; height: 40px; display: inline-block; text-align: center; line-height: 40px; font-size: 28px;"></i>
-            </div>
-            <div class="user-date">{{ circular.date }}</div>
-            <div class="pdf-icon">
-              {% if circular.pdf_link %}
-                {% if circular.pdf_link|slice:'-4:' == '.pdf' %}
-                  <i class="far fa-file-pdf"></i> <!-- PDF icon -->
-                {% else %}
-                   <i class="fa-solid fa-images"  style="font-size: 28px;" ></i>  <!-- Default icon for other file types -->
-                {% endif %}
-              {% else %}
-                <i class="fa-solid fa-images"  style="font-size: 28px;"></i> <!-- Default icon for no PDF link -->
-              {% endif %}
-            </div>
-          </div>
-          <div class="description">
-            {{ circular.description }}
-          </div>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background-color: rgb(244,187,68);">
+        <a class="navbar-brand" href="{% url 'dashboard' %}">
+            <i class="fa fa-arrow-left" aria-hidden="true"></i>
+            <span class="nav_text" style="font-weight: bold;">EVENTS</span>
         </a>
-      </li>
-    {% endfor %}
-      <!-- End loop -->
-  </ul>
-</div>
+    </nav>
 
+    <div class="container">
+        <ul class="user-list">
+            <!-- Loop over circulars -->
+            {% for circular in circulars %}
+            <li class="user-item">
+                <a href="javascript:void(0);" id="circular-link-{{ forloop.counter }}">
+                    <div class="user-info">
+                        <div class="book-icon">
+                            <i class="fas fa-calendar-alt" style="color: white; background-color: rgb(65,105,225); width: 40px; height: 40px; display: inline-block; text-align: center; line-height: 40px; font-size: 28px;"></i>
+                        </div>
+                        <div class="user-date">{{ circular.date }}</div>
+                        <div class="pdf-icon" id="pdf-icon-{{ forloop.counter }}">
+                            {% if circular.pdf_link %}
+                                {% if circular.pdf_link|slice:'-4:' == '.pdf' %}
+                                    <i class="far fa-file-pdf"></i> <!-- PDF icon -->
+                                {% else %}
+                                   <i class="fa-solid fa-images"  style="font-size: 28px;"></i> <!-- Default icon for other file types -->
+                                {% endif %}
+                            {% else %}
+                                <i class="fa-solid fa-images" style="font-size: 28px;"></i> <!-- Default icon for no PDF link -->
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="description">{{ circular.description }}</div>
+                </a>
+            </li>
+            {% endfor %}
+            <!-- End loop -->
+        </ul>
+    </div>
 
+    {% if messages %}
+    <div id="messages-container" class="messages">
+        {% for message in messages %}
+        <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} alert-dismissible fade show" role="alert" style="margin-left: 4px; margin-right: 4px;">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 
-{% if messages %}
-<div id="messages-container" class="messages">
-  {% for message in messages %}
-  <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} alert-dismissible fade show" role="alert" style="margin-left: 4px; margin-right: 4px;">
-    {{ message }}
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-  {% endfor %}
-</div>
-{% endif %}
+    <!-- Modal for PDF Options -->
+    <div class="modal fade" id="pdfModal" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="pdfModalLabel">Choose an Action</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>What would you like to do with this document?</p>
+                    <button type="button" class="btn btn-primary" id="openInGDrive" style="margin-bottom: 10px;">Open in Google Drive</button>
+                    <button type="button" class="btn btn-success" id="downloadPdf">Download as PDF</button>
+                </div>    
+            </div>
+        </div>
+    </div>
 
-<!-- jQuery and Bootstrap JS -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            let currentPdfUrl = '';
+            const gcmId = '{{ request.session.gcm_id }}';
+            const iosId = '{{ request.session.ios_id }}';
 
-<script>
-  $(document).ready(function() {
-    {% for circular in circulars %}
-    $('#circular-link-{{ forloop.counter }}').on('click', function(event) {
-      event.preventDefault();
-      const pdfUrl = "{{ circular.pdf_link }}";
-      const fileExtension = pdfUrl.split('.').pop().toLowerCase();
+            console.log('GCM ID:', gcmId);
+            console.log('iOS ID:', iosId);
 
-      if (fileExtension === 'pdf' || pdfUrl.slice(-4) === '.pdf') {
-        // Direct download for PDF files
-        alert("Your download will start now.");
-        const link = document.createElement("a");
-        link.href = pdfUrl;
-        link.download = "school.pdf"; // specify the filename
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      } else {
-        // Handle navigation for other file types (assuming it's an image)
-        window.location.href = "{% url 'photo' circular.id %}";
-      }
-    });
-    {% endfor %}
+            {% for circular in circulars %}
+            $('#pdf-icon-{{ forloop.counter }}').on('click', function() {
+                const pdfUrl = "{{ circular.pdf_link }}";
+                const fileExtension = pdfUrl.split('.').pop().toLowerCase();
 
-    // Function to close the alert when close button is clicked
-    $('.alert .close').on('click', function() {
-      $(this).parent().fadeOut('slow');
-    });
+                if (fileExtension === 'pdf') {
+                    currentPdfUrl = pdfUrl;
+                    if (iosId) {
+                        alert("Your download will start now.");
+                        const link = document.createElement("a");
+                        link.href = pdfUrl;
+                        link.download = "document.pdf";
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    } else {
+                        $('#pdfModal').modal('show');
+                    }
+                } else {
+                    window.location.href = "{% url 'photo' circular.id %}";
+                }
+            });
+            {% endfor %}
 
-    // Automatically close messages after 5 seconds
-    setTimeout(function() {
-      $('.alert').fadeOut('slow');
-    }, 5000);
-  });
-</script>
+            $('#openInGDrive').on('click', function() {
+                const driveUrlWithDownloadOption = `https://drive.google.com/viewerng/viewer?url=${currentPdfUrl}`;
+                window.open(driveUrlWithDownloadOption, '_blank');
+                $('#pdfModal').modal('hide');
+            });
 
-<script>
-  $(document).ready(function() {
-    // Function to close the alert when close button is clicked
-    $('.alert .close').on('click', function() {
-      $(this).parent().fadeOut('slow');
-    });
+            $('#downloadPdf').on('click', function() {
+                const link = document.createElement("a");
+                link.href = currentPdfUrl;
+                link.download = "document.pdf";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                $('#pdfModal').modal('hide');
+            });
 
-    // Automatically close messages after 5 seconds
-    setTimeout(function() {
-      $('.alert').fadeOut('slow');
-    }, 10000); 
-  });
-</script>
-
+            setTimeout(function() {
+                $('.alert').fadeOut('slow');
+            }, 10000);
+        });
+    </script>
 
 </body>
 </html>

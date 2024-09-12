@@ -29,6 +29,11 @@ def Login(request):
         ios_id = request.GET.get('ios_id', '0')  # Default to '0' if not provided
         gcm_id = request.GET.get('gcm_id', '0') 
         
+        if gcm_id != '0':
+            request.session['gcm_id'] = gcm_id
+        if ios_id != '0':
+            request.session['ios_id'] = ios_id
+        
         # print(ios_id)
         # print(gcm_id)
         # print("Mobile Number:", mobile_number)

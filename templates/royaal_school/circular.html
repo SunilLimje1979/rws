@@ -149,6 +149,25 @@
   </ul>
 </div>
 
+<!-- Modal for PDF Options -->
+<div class="modal fade" id="pdfModal" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="pdfModalLabel">Choose an Action</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>What would you like to do with this document?</p>
+        <button type="button" class="btn btn-primary" id="openInGDrive" style="margin-bottom: 10px;">Open in Google Drive</button>
+        <button type="button" class="btn btn-success" id="downloadPdf">Download as PDF</button>
+      </div>    
+    </div>
+  </div>
+</div>
+
 
 {% if messages %}
 <div id="messages-container" class="messages">
@@ -164,41 +183,63 @@
 {% endif %}
 
 
-<script src="https://kit.fontawesome.com/a076d05399.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
   $(document).ready(function() {
+    let currentPdfUrl = '';
+
+    const gcmId = '{{ request.session.gcm_id }}';
+    const iosId = '{{ request.session.ios_id }}';
+
+    console.log('GCM ID:', gcmId);
+    console.log('iOS ID:', iosId);
+
     {% for circular in circulars %}
-    $('#pdf-icon-{{ forloop.counter }}').on('click', function() {
+    $('#pdf-icon-{{ forloop.counter }} .pdf-icon').on('click', function() {
       const pdfUrl = "{{ circular.pdf_link }}";
       const fileExtension = pdfUrl.split('.').pop().toLowerCase();
 
       if (fileExtension === 'pdf') {
-        // Direct download for PDF files
-        alert("Your download will start now.");
-        const link = document.createElement("a");
-        link.href = pdfUrl;
-        link.download = "document.pdf"; // specify the filename
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        currentPdfUrl = pdfUrl; // Store PDF URL
+        
+        if (iosId) {
+          alert("Your download will start now.");
+          const link = document.createElement("a");
+          link.href = pdfUrl;
+          link.download = "document.pdf";
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        } else {
+          $('#pdfModal').modal('show');
+        }
       } else {
-        // Handle navigation for other file types (assuming it's an image)
         window.location.href = "{% url 'photo' circular.id %}";
       }
     });
     {% endfor %}
 
-    // Function to close the alert when close button is clicked
-    $('.alert .close').on('click', function() {
-      $(this).parent().fadeOut('slow');
+    $('#openInGDrive').on('click', function() {
+      const driveUrl = `https://drive.google.com/viewerng/viewer?url=${currentPdfUrl}`;
+      window.open(driveUrl, '_blank');
+      $('#pdfModal').modal('hide');
     });
 
-    // Automatically close messages after 5 seconds
+    $('#downloadPdf').on('click', function() {
+      const link = document.createElement("a");
+      link.href = currentPdfUrl;
+      link.download = "document.pdf";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      $('#pdfModal').modal('hide');
+    });
+
     setTimeout(function() {
       $('.alert').fadeOut('slow');
-    }, 5000);
+    }, 10000);
   });
 </script>
 
