@@ -1007,18 +1007,20 @@ def Fees(request):
             # Check if 'response' is a list (second response structure)
             if isinstance(data_circulars.get('response'), list):
                 circulars = [{
+                    "id": circular['id'],
                     "type": circular['type'],
                     'date': circular['date'],
                     'description': circular['description'],
-                    # 'pdf_link': f"https://www.mispack.in/app/application/main/{circular['uid']}"
+                    'pdf_link': f"https://www.mispack.in/app/application/main/{circular['uid']}"
                 } for circular in data_circulars['response']]
             else:
                 # Assume 'response' is a dictionary with numeric keys (first response structure)
                 circulars = [{
+                    "id": data_circulars['response'][key]['id'], 
                     "type": data_circulars['response'][key]['type'],
                     'date': data_circulars['response'][key]['date'],
                     'description': data_circulars['response'][key]['description'],
-                    # 'pdf_link': f"https://www.mispack.in/app/application/main/{data_circulars['response'][key]['uid']}"
+                    'pdf_link': f"https://www.mispack.in/app/application/main/{data_circulars['response'][key]['uid']}"
                 } for key in data_circulars['response']]
 
             # Prepare the context to pass to the template

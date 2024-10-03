@@ -115,7 +115,8 @@
 <div class="container mt-4">
   <div class="card">
     <div class="card-body text-center">
-      <i class="fas fa-user-circle profile-icon"></i> <!-- Profile Icon -->
+      {% comment %} <i class="fas fa-user-circle profile-icon"></i> <!-- Profile Icon --> {% endcomment %}
+      <img src="https://www.mispack.in/studentappphoto/{{ matching_students.0.custid }}/{{ matching_students.0.adminno }}.jpg" alt="Profile Icon" class="profile-icon" style="width: 70px; height: 72px; border-radius: 50%;"> 
       <form action="#" method="post">
         {% for student in matching_students %}
         <div class="form-group">
