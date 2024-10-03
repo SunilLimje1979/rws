@@ -116,7 +116,14 @@
   <div class="card">
     <div class="card-body text-center">
       {% comment %} <i class="fas fa-user-circle profile-icon"></i> <!-- Profile Icon --> {% endcomment %}
-      <img src="https://www.mispack.in/studentappphoto/{{ matching_students.0.custid }}/{{ matching_students.0.adminno }}.jpg" alt="Profile Icon" class="profile-icon" style="width: 70px; height: 72px; border-radius: 50%;"> 
+      <img src="https://www.mispack.in/studentappphoto/{{ matching_students.0.custid }}/{{ matching_students.0.adminno }}.jpg" 
+      alt="Profile Icon" 
+      class="profile-icon" 
+      style="width: 70px; height: 72px; border-radius: 50%;" 
+      onerror="this.onerror=null; this.style.display='none'; document.getElementById('fallback-icon').style.display='inline-block';">
+
+      <i id="fallback-icon" class="fas fa-user-circle profile-icon" style="display: none; font-size: 70px;"></i>
+      
       <form action="#" method="post">
         {% for student in matching_students %}
         <div class="form-group">
