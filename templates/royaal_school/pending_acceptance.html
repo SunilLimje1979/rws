@@ -223,8 +223,18 @@
                     </a>
                 </div>
             </div>
-            <div class="description">
+            {% comment %} <div class="description">
                 <span><b>Type:</b></span> {{ circular.type | upper }}<br>
+                {{ circular.description }}
+            </div> {% endcomment %}
+
+            <div class="description">
+                <span><b>Type:</b></span> 
+                {% if circular.type == "HOMEWORK" %}
+                    ASSIGNMENT
+                {% else %}
+                    {{ circular.type | upper }}
+                {% endif %}<br>
                 {{ circular.description }}
             </div>
             
