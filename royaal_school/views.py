@@ -120,102 +120,98 @@ def Otp(request):
 
 ##################################### Dashboard Page ##################################################################
 def DashboardPage(request):
-    if 'mobile_number' in request.session:
+    if 'selected_admin_numbers' in request.session:
+        # Retrieve the selected admin numbers from the session
+        selected_admin_numbers = request.session.get('selected_admin_numbers', [])
+        # print(selected_admin_numbers)
+
+        # Retrieve the mobile number from the session
+        mobile_number = request.session.get('mobile_number')
         
-        if 'selected_admin_numbers' in request.session:
-            # Retrieve the selected admin numbers from the session
-            selected_admin_numbers = request.session.get('selected_admin_numbers', [])
-            # print(selected_admin_numbers)
-
-            # Retrieve the mobile number from the session
-            mobile_number = request.session.get('mobile_number')
+        # API endpoint URL for student data
+        student_api_url = 'https://mispack.in/app/admin/public/getAllStudent'
+        student_api_data = {'mobile': mobile_number}
+        
+        try:
+            # Make API request to get student data
+            student_response = requests.post(student_api_url, json=student_api_data, verify=False)
             
-            # API endpoint URL for student data
-            student_api_url = 'https://mispack.in/app/admin/public/getAllStudent'
-            student_api_data = {'mobile': mobile_number}
-            
-            try:
-                # Make API request to get student data
-                student_response = requests.post(student_api_url, json=student_api_data, verify=False)
+            if student_response.status_code == 200:
+                # Extract student data from API response
+                student_api_output = student_response.json().get('data', {})
+                # print("137" ,student_api_output)
                 
-                if student_response.status_code == 200:
-                    # Extract student data from API response
-                    student_api_output = student_response.json().get('data', {})
-                    # print("137" ,student_api_output)
-                    
-                    # Filter the data based on selected_admin_numbers
-                    matching_students = [student_data for student_data in student_api_output.values() if student_data.get('adminno') in selected_admin_numbers]
-                    
-                    # Remove duplicate entries
-                    matching_students = list({student['adminno']: student for student in matching_students}.values())
-                    # print( "144" ,matching_students)
-                    
-                    
-                    # Set student data in session
+                # Filter the data based on selected_admin_numbers
+                matching_students = [student_data for student_data in student_api_output.values() if student_data.get('adminno') in selected_admin_numbers]
+                
+                # Remove duplicate entries
+                matching_students = list({student['adminno']: student for student in matching_students}.values())
+                # print( "144" ,matching_students)
+                
+                
                 # Set student data in session
-                    request.session['student_data'] = matching_students
+            # Set student data in session
+                request.session['student_data'] = matching_students
 
-                    # Access the first key of the dictionary to get the student data
-                    # student_key = next(iter(request.session['student_data']))
+                # Access the first key of the dictionary to get the student data
+                # student_key = next(iter(request.session['student_data']))
 
-                    # # # Update 'classid' value if it is 'Emp'
-                    # if request.session['student_data'][student_key]['classid'] == 'Emp':
-                    #     request.session['student_data'][student_key]['classid'] = 2
+                # # # Update 'classid' value if it is 'Emp'
+                # if request.session['student_data'][student_key]['classid'] == 'Emp':
+                #     request.session['student_data'][student_key]['classid'] = 2
+            
+
+                # Print the updated session data
+                # print(request.session['student_data'])
+
                 
-
-                    # Print the updated session data
-                    # print(request.session['student_data'])
-
+                # Print student data stored in session
+                # print("Student data stored in session:", student_api_output)
+                
+                # Filter student data based on selected admin numbers
+                matching_students = [student_data for student_data in student_api_output.values() if student_data.get('adminno') in selected_admin_numbers]
+                print(matching_students)
+                # Get the first name and last name of the first student (assuming only one student is selected)
+                first_name = matching_students[0].get('firstname', '') if matching_students else ''
+                last_name = matching_students[0].get('lastname', '') if matching_students else ''
                     
-                    # Print student data stored in session
-                    # print("Student data stored in session:", student_api_output)
-                    
-                    # Filter student data based on selected admin numbers
-                    matching_students = [student_data for student_data in student_api_output.values() if student_data.get('adminno') in selected_admin_numbers]
-                    print(matching_students)
-                    # Get the first name and last name of the first student (assuming only one student is selected)
-                    first_name = matching_students[0].get('firstname', '') if matching_students else ''
-                    last_name = matching_students[0].get('lastname', '') if matching_students else ''
-                        
-                else:
-                    print("Failed to fetch student data from the API")
-                    first_name = ''
-                    last_name = ''
-                    
-            except requests.exceptions.RequestException as e:
-                print(f'Error: {e}')
+            else:
+                print("Failed to fetch student data from the API")
                 first_name = ''
                 last_name = ''
                 
-            # API endpoint URL for notification counts
-            notification_api_url = 'https://mispack.in/app/admin/public/getmessagecount'
+        except requests.exceptions.RequestException as e:
+            print(f'Error: {e}')
+            first_name = ''
+            last_name = ''
             
-            # API parameters for notification counts
-            notification_api_data = {
-                "contact": mobile_number,
-                "adminno": selected_admin_numbers[0] if selected_admin_numbers else None  # Assuming only one admin number is selected
-            }
+        # API endpoint URL for notification counts
+        notification_api_url = 'https://mispack.in/app/admin/public/getmessagecount'
+        
+        # API parameters for notification counts
+        notification_api_data = {
+            "contact": mobile_number,
+            "adminno": selected_admin_numbers[0] if selected_admin_numbers else None  # Assuming only one admin number is selected
+        }
+        
+        try:
+            # Make API request for notification counts with SSL verification disabled
+            notification_response = requests.post(notification_api_url, json=notification_api_data, verify=False)
             
-            try:
-                # Make API request for notification counts with SSL verification disabled
-                notification_response = requests.post(notification_api_url, json=notification_api_data, verify=False)
-                
-                if notification_response.status_code == 200:
-                    notification_output = notification_response.json()
-                    if isinstance(notification_output['response'], list) and len(notification_output['response']) > 0:
-                        notification_counts = notification_output['response'][0]
-                    else:
-                        notification_counts = None
+            if notification_response.status_code == 200:
+                notification_output = notification_response.json()
+                if isinstance(notification_output['response'], list) and len(notification_output['response']) > 0:
+                    notification_counts = notification_output['response'][0]
                 else:
                     notification_counts = None
-            except requests.exceptions.RequestException as e:
+            else:
                 notification_counts = None
-            
-            return render(request, 'royaal_school/dashboard.html', {'first_name': first_name, 'last_name': last_name, 'notification_counts': notification_counts})
-        else:
-            return redirect('my_students')
+        except requests.exceptions.RequestException as e:
+            notification_counts = None
+        
+        return render(request, 'royaal_school/dashboard.html', {'first_name': first_name, 'last_name': last_name, 'notification_counts': notification_counts})
     else:
-        return redirect('login') 
+        return redirect('my_students')
 ##################################### My Student Page ##################################################################
 
 def My_students(request):
@@ -247,10 +243,10 @@ def My_students(request):
                 return render(request, 'error.html', {'message': f'Error: {e}'})
         else:
             # Handle missing mobile number in session
-            return render(request, 'error.html', {'message': 'Mobile number not found in session'})
+            return redirect('login')
     else:
         # Handle unsupported HTTP method
-        return render(request, 'error.html', {'message': 'Unsupported HTTP method'})
+        return redirect('login')
     
 
 ##################################### Store Admin No ##################################################################
