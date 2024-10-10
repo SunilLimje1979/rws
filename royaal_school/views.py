@@ -15,7 +15,6 @@ from barcode import Code128
 # Suppress SSL warnings
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
-
 ##################################### Log In Page ##################################################################
 def Login(request):
     if request.method == "GET":
@@ -121,96 +120,102 @@ def Otp(request):
 
 ##################################### Dashboard Page ##################################################################
 def DashboardPage(request):
-    # Retrieve the selected admin numbers from the session
-    selected_admin_numbers = request.session.get('selected_admin_numbers', [])
-    # print(selected_admin_numbers)
-    
-    # Retrieve the mobile number from the session
-    mobile_number = request.session.get('mobile_number')
-    
-    # API endpoint URL for student data
-    student_api_url = 'https://mispack.in/app/admin/public/getAllStudent'
-    student_api_data = {'mobile': mobile_number}
-    
-    try:
-        # Make API request to get student data
-        student_response = requests.post(student_api_url, json=student_api_data, verify=False)
+    if 'mobile_number' in request.session:
         
-        if student_response.status_code == 200:
-            # Extract student data from API response
-            student_api_output = student_response.json().get('data', {})
-            # print("137" ,student_api_output)
-            
-               # Filter the data based on selected_admin_numbers
-            matching_students = [student_data for student_data in student_api_output.values() if student_data.get('adminno') in selected_admin_numbers]
-            
-            # Remove duplicate entries
-            matching_students = list({student['adminno']: student for student in matching_students}.values())
-            # print( "144" ,matching_students)
-            
-            
-            # Set student data in session
-           # Set student data in session
-            request.session['student_data'] = matching_students
+        if 'selected_admin_numbers' in request.session:
+            # Retrieve the selected admin numbers from the session
+            selected_admin_numbers = request.session.get('selected_admin_numbers', [])
+            # print(selected_admin_numbers)
 
-            # Access the first key of the dictionary to get the student data
-            # student_key = next(iter(request.session['student_data']))
-
-            # # # Update 'classid' value if it is 'Emp'
-            # if request.session['student_data'][student_key]['classid'] == 'Emp':
-            #     request.session['student_data'][student_key]['classid'] = 2
-          
-
-            # Print the updated session data
-            # print(request.session['student_data'])
-
+            # Retrieve the mobile number from the session
+            mobile_number = request.session.get('mobile_number')
             
-            # Print student data stored in session
-            # print("Student data stored in session:", student_api_output)
+            # API endpoint URL for student data
+            student_api_url = 'https://mispack.in/app/admin/public/getAllStudent'
+            student_api_data = {'mobile': mobile_number}
             
-            # Filter student data based on selected admin numbers
-            matching_students = [student_data for student_data in student_api_output.values() if student_data.get('adminno') in selected_admin_numbers]
-            print(matching_students)
-            # Get the first name and last name of the first student (assuming only one student is selected)
-            first_name = matching_students[0].get('firstname', '') if matching_students else ''
-            last_name = matching_students[0].get('lastname', '') if matching_students else ''
+            try:
+                # Make API request to get student data
+                student_response = requests.post(student_api_url, json=student_api_data, verify=False)
                 
-        else:
-            print("Failed to fetch student data from the API")
-            first_name = ''
-            last_name = ''
-            
-    except requests.exceptions.RequestException as e:
-        print(f'Error: {e}')
-        first_name = ''
-        last_name = ''
-        
-    # API endpoint URL for notification counts
-    notification_api_url = 'https://mispack.in/app/admin/public/getmessagecount'
-    
-    # API parameters for notification counts
-    notification_api_data = {
-        "contact": mobile_number,
-        "adminno": selected_admin_numbers[0] if selected_admin_numbers else None  # Assuming only one admin number is selected
-    }
-    
-    try:
-        # Make API request for notification counts with SSL verification disabled
-        notification_response = requests.post(notification_api_url, json=notification_api_data, verify=False)
-        
-        if notification_response.status_code == 200:
-            notification_output = notification_response.json()
-            if isinstance(notification_output['response'], list) and len(notification_output['response']) > 0:
-                notification_counts = notification_output['response'][0]
-            else:
-                notification_counts = None
-        else:
-            notification_counts = None
-    except requests.exceptions.RequestException as e:
-        notification_counts = None
-    
-    return render(request, 'royaal_school/dashboard.html', {'first_name': first_name, 'last_name': last_name, 'notification_counts': notification_counts})
+                if student_response.status_code == 200:
+                    # Extract student data from API response
+                    student_api_output = student_response.json().get('data', {})
+                    # print("137" ,student_api_output)
+                    
+                    # Filter the data based on selected_admin_numbers
+                    matching_students = [student_data for student_data in student_api_output.values() if student_data.get('adminno') in selected_admin_numbers]
+                    
+                    # Remove duplicate entries
+                    matching_students = list({student['adminno']: student for student in matching_students}.values())
+                    # print( "144" ,matching_students)
+                    
+                    
+                    # Set student data in session
+                # Set student data in session
+                    request.session['student_data'] = matching_students
 
+                    # Access the first key of the dictionary to get the student data
+                    # student_key = next(iter(request.session['student_data']))
+
+                    # # # Update 'classid' value if it is 'Emp'
+                    # if request.session['student_data'][student_key]['classid'] == 'Emp':
+                    #     request.session['student_data'][student_key]['classid'] = 2
+                
+
+                    # Print the updated session data
+                    # print(request.session['student_data'])
+
+                    
+                    # Print student data stored in session
+                    # print("Student data stored in session:", student_api_output)
+                    
+                    # Filter student data based on selected admin numbers
+                    matching_students = [student_data for student_data in student_api_output.values() if student_data.get('adminno') in selected_admin_numbers]
+                    print(matching_students)
+                    # Get the first name and last name of the first student (assuming only one student is selected)
+                    first_name = matching_students[0].get('firstname', '') if matching_students else ''
+                    last_name = matching_students[0].get('lastname', '') if matching_students else ''
+                        
+                else:
+                    print("Failed to fetch student data from the API")
+                    first_name = ''
+                    last_name = ''
+                    
+            except requests.exceptions.RequestException as e:
+                print(f'Error: {e}')
+                first_name = ''
+                last_name = ''
+                
+            # API endpoint URL for notification counts
+            notification_api_url = 'https://mispack.in/app/admin/public/getmessagecount'
+            
+            # API parameters for notification counts
+            notification_api_data = {
+                "contact": mobile_number,
+                "adminno": selected_admin_numbers[0] if selected_admin_numbers else None  # Assuming only one admin number is selected
+            }
+            
+            try:
+                # Make API request for notification counts with SSL verification disabled
+                notification_response = requests.post(notification_api_url, json=notification_api_data, verify=False)
+                
+                if notification_response.status_code == 200:
+                    notification_output = notification_response.json()
+                    if isinstance(notification_output['response'], list) and len(notification_output['response']) > 0:
+                        notification_counts = notification_output['response'][0]
+                    else:
+                        notification_counts = None
+                else:
+                    notification_counts = None
+            except requests.exceptions.RequestException as e:
+                notification_counts = None
+            
+            return render(request, 'royaal_school/dashboard.html', {'first_name': first_name, 'last_name': last_name, 'notification_counts': notification_counts})
+        else:
+            return redirect('my_students')
+    else:
+        return redirect('login') 
 ##################################### My Student Page ##################################################################
 
 def My_students(request):
@@ -1219,6 +1224,10 @@ def Imagespecific(request):
 def Logout(request):
     # Clear all sessions
     # request.session.clear()
+    
+    # if 'selected_admin_numbers' in request.session:
+    #     del request.session['selected_admin_numbers']
+    
     # Redirect to the login page
     return redirect('exit')
 
@@ -1226,6 +1235,10 @@ def Logout(request):
 def exit(request):
     # Clear all sessions
     # request.session.clear()
+    
+    # if 'selected_admin_numbers' in request.session:
+    #     del request.session['selected_admin_numbers']
+    
     # Redirect to the login page
     return render(request,'royaal_school/exit.html')
 ##################################### PDF DEMO ##################################################################
