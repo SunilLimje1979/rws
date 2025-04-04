@@ -201,7 +201,7 @@
       if (fileExtension === 'pdf') {
         currentPdfUrl = pdfUrl; // Store PDF URL in variable
         
-        if (iosId) {
+        if (iosId && iosId !== '0') {
           // If iosId is not blank, directly download the PDF
           alert("Your download will start now.");
           const link = document.createElement("a");

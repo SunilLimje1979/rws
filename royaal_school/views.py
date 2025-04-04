@@ -21,17 +21,29 @@ def Login(request):
         if 'mobile_number' in request.session:
             return redirect('dashboard') 
         else:
-            return render(request, 'royaal_school/login.html')
+            ios_id = request.GET.get('ios_id', '0')  # Default to '0' if not provided
+            gcm_id = request.GET.get('gcm_id', '0') 
+            
+            # print(ios_id)
+            # print(gcm_id,"29")
+            
+            # if gcm_id != '0':
+            request.session['gcm_id'] = gcm_id
+            # if ios_id != '0':
+            request.session['ios_id'] = ios_id
+                
+            return render(request, 'royaal_school/login.html',{"ios_id":ios_id})
+        
     elif request.method == "POST":
         # Get mobile number from POST data
         mobile_number = request.POST.get('mobileNumber')
-        ios_id = request.GET.get('ios_id', '0')  # Default to '0' if not provided
-        gcm_id = request.GET.get('gcm_id', '0') 
+        # ios_id = request.GET.get('ios_id', '0')  # Default to '0' if not provided
+        # gcm_id = request.GET.get('gcm_id', '0') 
         
-        if gcm_id != '0':
-            request.session['gcm_id'] = gcm_id
-        if ios_id != '0':
-            request.session['ios_id'] = ios_id
+        # if gcm_id != '0':
+        #     request.session['gcm_id'] = gcm_id
+        # if ios_id != '0':
+        #     request.session['ios_id'] = ios_id
         
         # print(ios_id)
         # print(gcm_id)
@@ -44,6 +56,12 @@ def Login(request):
         api_url = "https://mispack.in/app/admin/public/checkNumber"
         api_data = {"mobile": mobile_number}
         response = requests.post(api_url, json=api_data, verify=False)
+        
+        gcm_id=request.session['gcm_id'] 
+        ios_id=request.session['ios_id'] 
+        
+        print(ios_id)
+        print(gcm_id,"65")
         
         # Check if the request was successful
         if response.status_code == 200:
