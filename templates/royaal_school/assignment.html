@@ -186,18 +186,16 @@
       if (fileExtension === 'pdf') {
         currentPdfUrl = pdfUrl; // Store PDF URL in variable
         
-        if (iosId && iosId !== '0') {
-          // iOS-specific handling
+        if (gcmId && gcmId !== '0') {
+          $('#pdfModal').modal('show');
+        } else {
           alert("Your download will start now.");
           const link = document.createElement("a");
           link.href = pdfUrl;
-          link.download = "document.pdf"; // specify the filename
+          link.download = "document.pdf";
           document.body.appendChild(link);
           link.click();
-          document.body.removeChild(link);
-        } else {
-          // Non-iOS handling
-          $('#pdfModal').modal('show');
+          document.body.removeChild(link);  
         }
       } else {
         // Handle navigation for other file types (assuming it's an image)

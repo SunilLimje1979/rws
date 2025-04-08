@@ -198,16 +198,16 @@
       if (fileExtension === 'pdf') {
         currentPdfUrl = pdfUrl; // Store PDF URL
         
-        if (iosId && iosId !== '0') {
+        if (gcmId && gcmId !== '0') {
+          $('#pdfModal').modal('show');
+        } else {
           alert("Your download will start now.");
           const link = document.createElement("a");
           link.href = pdfUrl;
           link.download = "document.pdf";
           document.body.appendChild(link);
           link.click();
-          document.body.removeChild(link);
-        } else {
-          $('#pdfModal').modal('show');
+          document.body.removeChild(link);  
         }
       } else {
         window.location.href = "{% url 'photo' circular.id %}";
